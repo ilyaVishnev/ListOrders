@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.js"></script>
+
+    <script>
+        var app = angular.module("UserManagement", []);
+        app.controller("UsersController", function ($scope, $http) {
+            $scope.users = [];
+            $scope.IsVisible = false;
+            $http({
+                method: "get",
+                url: "/users"
+            }).then(function (res) {
+                    $scope.users = res.data;
+                },
+                function (res) {
+                    console.log("Error: " + res.status + " : " + res.data);
+                });
+            $scope.sendUser = function (value) {
+                $http({
+                    method: "post",
+                    url: "/user",
+                    data: value
+                }).then(function (res) {
+                        $scope.orders = res.data;
+                        $scope.IsVisible = true;
+                    },
+                    function (res) {
+                         console.log("Error: " + res.status + " : " + res.data);
+                    });
+
+            }
+        })
+    </script>
+
+    <head>
+<body ng-app="UserManagement" ng-controller="UsersController">
+<table border="1">
+    <tr>
+        <th>User Id</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th></th>
+    </tr>
+    <tr ng-repeat="user in users">
+        <td> {{ user.id }}</td>
+        <td> {{ user.firstname }}</td>
+        <td>{{ user.lastname }}</td>
+        <td><input ng-model="choseBy" type="radio" value="" name="search-type" ng-click="sendUser(user.id)">
+        </td>
+    </tr>
+</table>
+<br/>
+<div ng-show="IsVisible">
+    <table>
+        <tr>
+            <th>Order Id</th>
+            <th>serviceName</th>
+            <th>targetUrl</th>
+            <th>price</th>
+        </tr>
+        <tr ng-repeat="order in orders">
+            <td>{{order.id}}</td>
+            <td>{{order.servicename}}</td>
+            <td>{{order.targeturl}}</td>
+            <td>{{order.price}}</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
